@@ -1,6 +1,6 @@
 <img src="https://miro.medium.com/max/724/1*mn2h7oJ8yMHBcmsNSbCIbA.png" width="300"/>
 
-#Product Management application
+# Product Management application
 
 ### Products model
 - CRUD
@@ -12,7 +12,7 @@
 - price,
 - description
 
-###Wishlists model
+### Wishlists model
 
 - CRUD
 - add and remove product in wishlist
