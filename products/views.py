@@ -3,25 +3,27 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from products.models import Product
 from products.serializers import ProductSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from django.db.models import IntegerField, Value
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticatedOrReadOnly])
 def products_list(request):
     """
     List of all Products, or create a new Products.
     """
     if request.method == 'GET':
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+        annotated_products = []
+        for item in products:
+            wished_by = item.wishlist_set.all().values('user').distinct().count()
+            annotated_products += Product.objects.filter(name=item.name).annotate(
+                wished_by=Value(wished_by, output_field=IntegerField()))
+
+        serializer = ProductSerializer(annotated_products, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
         create_data = request.data
-        create_data['user'] = str(request.user.id)
         serializer = ProductSerializer(data=create_data)
         if serializer.is_valid():
             serializer.save()
@@ -30,7 +32,6 @@ def products_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticatedOrReadOnly])
 def products_detail(request, pk):
     """
     Retrieve, update or delete a Product.
@@ -46,7 +47,6 @@ def products_detail(request, pk):
 
     elif request.method == 'PUT':
         create_data = request.data
-        create_data['user'] = str(request.user.id)
         serializer = ProductSerializer(instance=products, data=create_data)
         if serializer.is_valid():
             serializer.save()

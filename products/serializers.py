@@ -4,6 +4,8 @@ from .models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
 
+    wished_by = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['id', 'name', 'sku', 'price', 'description', 'wished_by']
