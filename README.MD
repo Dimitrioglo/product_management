@@ -5,7 +5,7 @@
 ### Products model
 - CRUD
 - counter of users which added product in at least one of your own Wishlist
-- wished by unique users counter for each product
+
 #### fields:
 - name,
 - sku,
